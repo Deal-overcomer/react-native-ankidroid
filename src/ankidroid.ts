@@ -5,7 +5,7 @@ import {
   PermissionStatus,
   Platform,
   Rationale,
-} from 'react-native';
+} from "react-native";
 import {
   Errors,
   ErrorText,
@@ -20,7 +20,7 @@ import {
   Properties,
   Result,
   Settings,
-} from './types';
+} from "./types";
 
 const { AnkiDroidModule } = NativeModules;
 
@@ -52,7 +52,7 @@ export class AnkiDroid {
    * @returns `true` if android
    */
   static androidCheck(): boolean {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       return true;
     }
     console.warn(MODULE_NAME, Errors.OS_ERROR);
@@ -118,7 +118,7 @@ export class AnkiDroid {
    * @return a tuple of any errors and the result `[error, result]`
    */
   static async requestPermission(
-    rationale: Rationale = null,
+    rationale: Rationale = null
   ): Promise<Result<PermissionStatus>> {
     if (!AnkiDroid.androidCheck()) return [new Error(Errors.OS_ERROR)];
     let permissionName: Permission;
@@ -128,11 +128,11 @@ export class AnkiDroid {
       console.warn(MODULE_NAME, error.toString());
       return [new Error(Errors.UNKNOWN_ERROR)];
     }
-    if (!permissionName) return [null, 'denied'];
+    if (!permissionName) return [null, "denied"];
     try {
       const permissionRequest = (await PermissionsAndroid.request(
         permissionName,
-        rationale,
+        rationale
       )) as PermissionStatus;
       return [null, permissionRequest];
     } catch (error) {
@@ -204,7 +204,7 @@ export class AnkiDroid {
    */
   static async getFieldList(
     modelName?: string,
-    modelId?: number | string,
+    modelId?: number | string
   ): Promise<Result<string[]>> {
     const [error, response] = await AnkiDroid._getFieldList(modelName, modelId);
     if (error) {
@@ -218,19 +218,19 @@ export class AnkiDroid {
    */
   private static async _getFieldList(
     modelName?: string,
-    modelId?: number | string,
+    modelId?: number | string
   ): Promise<Result<string[]>> {
     if (!AnkiDroid.androidCheck()) return [new Error(Errors.OS_ERROR)];
     const permissionStatus = await AnkiDroid.checkPermission();
     if (!permissionStatus) return [new Error(Errors.PERMISSION_ERROR)];
     if (!modelName && !modelId) return [new Error(Errors.IDENTIFIER_MISSING)];
-    if (typeof modelId === 'number') {
+    if (typeof modelId === "number") {
       modelId = modelId.toString();
     }
     try {
       const fieldList: string[] = await AnkiDroidModule.getFieldList(
         modelName || null,
-        modelId || null,
+        modelId || null
       );
       return [null, fieldList];
     } catch (error) {
@@ -281,18 +281,18 @@ export class AnkiDroid {
   static async uploadMediaFromUri(
     fileUri: string,
     preferredName: string,
-    mimeType: MEDIA_MIME_TYPE,
+    mimeType: MEDIA_MIME_TYPE
   ): Promise<Result<string>> {
     const [error, response] = await AnkiDroid._uploadMediaFromUri(
       fileUri,
       preferredName,
-      mimeType,
+      mimeType
     );
     if (error) {
       return await AnkiDroid._uploadMediaFromUri(
         fileUri,
         preferredName,
-        mimeType,
+        mimeType
       );
     }
     return [error, response];
@@ -304,7 +304,7 @@ export class AnkiDroid {
   private static async _uploadMediaFromUri(
     fileUri: string,
     preferredName: string,
-    mimeType: MEDIA_MIME_TYPE,
+    mimeType: MEDIA_MIME_TYPE
   ): Promise<Result<string>> {
     if (!AnkiDroid.androidCheck()) return [new Error(Errors.OS_ERROR)];
     const permissionStatus = await AnkiDroid.checkPermission();
@@ -313,7 +313,7 @@ export class AnkiDroid {
       const formatMediaName: string = await AnkiDroidModule.uploadMediaFromUri(
         fileUri,
         preferredName,
-        mimeType,
+        mimeType
       );
       return [null, formatMediaName];
     } catch (error) {
@@ -361,7 +361,7 @@ export class AnkiDroid {
    * @returns `null` if no errors
    */
   private checkForPropertyErrors(
-    properties: NewDeckProperties | NewModelProperties,
+    properties: NewDeckProperties | NewModelProperties
   ): Errors {
     for (var key in properties) {
       // skip loop if the property is from prototype
@@ -382,7 +382,7 @@ export class AnkiDroid {
   }
   private checkIfModelFieldsAreTheSame(
     modelFields: string[],
-    modelFieldsFromNote: string[],
+    modelFieldsFromNote: string[]
   ): Errors {
     let isSame = true;
     if (
@@ -394,7 +394,7 @@ export class AnkiDroid {
     }
     if (isSame) {
       const compareSet = new Set(modelFields);
-      modelFieldsFromNote.forEach(field => {
+      modelFieldsFromNote.forEach((field) => {
         compareSet.add(field);
       });
       if (compareSet.size !== modelFields.length) {
@@ -405,7 +405,7 @@ export class AnkiDroid {
       console.warn(
         MODULE_NAME,
         ErrorText.ARGUMENT_TYPE,
-        ErrorText.MODEL_FIELDS_DIFFERENT,
+        ErrorText.MODEL_FIELDS_DIFFERENT
       );
       return Errors.TYPE_ERROR;
     }
@@ -426,7 +426,7 @@ export class AnkiDroid {
         console.warn(
           MODULE_NAME,
           ErrorText.ARGUMENT_TYPE,
-          ErrorText.ARRAY_SAME_LENGTH,
+          ErrorText.ARRAY_SAME_LENGTH
         );
         return false;
       }
@@ -435,7 +435,7 @@ export class AnkiDroid {
         MODULE_NAME,
         ErrorText.ARGUMENT_TYPE,
         ErrorText.ARRAY_SAME_LENGTH,
-        error.toString(),
+        error.toString()
       );
       return false;
     }
@@ -448,18 +448,18 @@ export class AnkiDroid {
    */
   private checkArrayLength(
     noteValue: string | string[],
-    noteKey: string,
+    noteKey: string
   ): boolean {
     try {
       switch (noteKey) {
         case NoteKeys.cardNames:
-          if (noteValue.length === 2 && Array.isArray(noteValue)) return true;
+          if (noteValue.length >= 1 && Array.isArray(noteValue)) return true;
           break;
         case NoteKeys.questionFormat:
-          if (noteValue.length === 2 && Array.isArray(noteValue)) return true;
+          if (noteValue.length >= 1 && Array.isArray(noteValue)) return true;
           break;
         case NoteKeys.answerFormat:
-          if (noteValue.length === 2 && Array.isArray(noteValue)) return true;
+          if (noteValue.length >= 1 && Array.isArray(noteValue)) return true;
           break;
         default:
           return true;
@@ -467,14 +467,14 @@ export class AnkiDroid {
       console.warn(
         MODULE_NAME,
         ErrorText.ARGUMENT_TYPE,
-        `${noteKey} ${ErrorText.ARRAY_LENGTH_2}`,
+        `${noteKey} ${ErrorText.ARRAY_LENGTH_2}`
       );
     } catch (error) {
       console.warn(
         MODULE_NAME,
         ErrorText.ARGUMENT_TYPE,
         `${noteKey} ${ErrorText.ARRAY_LENGTH_2}`,
-        error.toString(),
+        error.toString()
       );
       return false;
     }
@@ -527,7 +527,7 @@ export class AnkiDroid {
     console.warn(
       MODULE_NAME,
       ErrorText.ARGUMENT_TYPE,
-      `${noteKey} ${errorText}`,
+      `${noteKey} ${errorText}`
     );
   }
   /**
@@ -538,7 +538,7 @@ export class AnkiDroid {
    */
   private getValidIdAndProperties(
     id?: ID,
-    properties?: Properties,
+    properties?: Properties
   ): Error | [ID | undefined, Properties | undefined] {
     if (!id && !properties) {
       return new Error(ErrorText.DECK_INFO_MISSING);
@@ -546,7 +546,7 @@ export class AnkiDroid {
       const errorCheckResults = this.checkForPropertyErrors(properties);
       if (errorCheckResults) return new Error(errorCheckResults);
     } else if (id) {
-      if (typeof id === 'number') {
+      if (typeof id === "number") {
         id = id.toString();
       }
     }
@@ -559,9 +559,9 @@ export class AnkiDroid {
    */
   private checkValidString(itemToCheck: string | string[]): boolean {
     if (Array.isArray(itemToCheck)) {
-      return itemToCheck.every(item => this.checkValidString(item));
+      return itemToCheck.every((item) => this.checkValidString(item));
     } else {
-      return typeof itemToCheck === 'string';
+      return typeof itemToCheck === "string";
     }
   }
 
@@ -570,7 +570,7 @@ export class AnkiDroid {
    */
   private async _addNote(
     valueFields: string[],
-    modelFields: string[],
+    modelFields: string[]
   ): Promise<Result<string>> {
     if (!AnkiDroid.androidCheck()) return [new Error(Errors.OS_ERROR)];
     const permissionStatus = await AnkiDroid.checkPermission();
@@ -589,7 +589,7 @@ export class AnkiDroid {
 
     const deckIdAndProperties = this.getValidIdAndProperties(
       deckId,
-      deckProperties,
+      deckProperties
     );
     if (deckIdAndProperties instanceof Error) {
       return [deckIdAndProperties];
@@ -599,7 +599,7 @@ export class AnkiDroid {
     }
     const modelIdAndProperties = this.getValidIdAndProperties(
       modelId,
-      modelProperties,
+      modelProperties
     );
     if (modelIdAndProperties instanceof Error) {
       return [modelIdAndProperties];
@@ -625,7 +625,7 @@ export class AnkiDroid {
     if (!modelId) {
       const errorCheckModelFields = this.checkIfModelFieldsAreTheSame(
         fields,
-        modelFields,
+        modelFields
       );
       if (errorCheckModelFields) return [new Error(errorCheckModelFields)];
     }
@@ -645,7 +645,7 @@ export class AnkiDroid {
         cardNames,
         questionFormat,
         answerFormat,
-        css,
+        css
       );
     } catch (error) {
       console.warn(MODULE_NAME, error.toString());
@@ -679,7 +679,7 @@ export class AnkiDroid {
    */
   public async addNote(
     valueFields: string[],
-    modelFields: string[],
+    modelFields: string[]
   ): Promise<Result<string>> {
     const [error, response] = await this._addNote(valueFields, modelFields);
     if (error) {

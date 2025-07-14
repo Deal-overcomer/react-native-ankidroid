@@ -1,5 +1,5 @@
 {
-  "name": "react-native-ankidroid",
+  "name": "@deal-overcomer/react-native-ankidroid",
   "version": "0.6.1",
   "description": "A react native wrapper for the AnkiDroid API",
   "main": "dist/index.js",
@@ -27,23 +27,26 @@
     "anki",
     "android"
   ],
-  "author": "Ivan Schurawel (https://github.com/is343)",
+  "author": "Slava ('https://github.com/Deal-overcomer')",
   "bugs": {
-    "url": "https://github.com/is343/react-native-ankidroid/issues"
+    "url": "https://github.com/Deal-overcomer/react-native-ankidroid/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/is343/react-native-ankidroid.git"
+    "url": "git+https://github.com/Deal-overcomer/react-native-ankidroid.git"
   },
-  "homepage": "https://github.com/is343/react-native-ankidroid/",
+  "homepage": "https://github.com/Deal-overcomer/react-native-ankidroid/",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": "^0.41.2"
+    "react-native": ">=0.41.2"
   },
   "devDependencies": {
-    "@types/react-native": "^0.56.24",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.0.3"
+    "@types/react-native": ">=0.56.24",
+    "tslint": ">=5.11.0",
+    "tslint-config-prettier": ">=1.15.0",
+    "typescript": ">=3.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
